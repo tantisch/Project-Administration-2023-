@@ -1,0 +1,122 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+}
+
+.wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    flex: 1;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.header-title {
+    margin: 0;
+    text-align: center;
+    color: #fff;
+}
+
+header {
+    background: #3a3a3a;
+    padding: 1rem 0;
+    width: 100%;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.login-btn {
+    background-color: #5f9ea0;
+    padding: 0.25rem 1rem;
+    margin-right: 1rem;
+}
+
+nav a:hover,
+.login-btn:hover {
+    background-color: #333;
+}
+
+main {
+    margin-top: 2rem;
+}
+
+footer {
+    background: #5f9ea0;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.footer-links a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 1rem;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+
+/* Стилі для електронних адрес */
+main ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+main li {
+    margin-bottom: 0.5rem;
+}
+
+main li a {
+    color: #5f9ea0; /* колір посилань для електронних адрес */
+    text-decoration: none;
+}
+
+main li a:hover {
+    text-decoration: underline; /* нижнє підкреслення при наведенні */
+}
+
+
+.link {
+    color: #5f9ea0; /* Задаємо колір тексту, відповідний кнопкам */
+    text-decoration: none; /* Відключаємо підчеркування */
+}
+
+/* Задаємо стиль для контактних посилань при наведенні */
+.link:hover {
+    text-decoration: underline; /* Додаємо підчеркування при наведенні */
+}

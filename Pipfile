@@ -5,8 +5,10 @@ name = "pypi"
 
 [packages]
 flask = "*"
+flask-restful = "*"
+vertica-python = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
+python_version = "3.8"
