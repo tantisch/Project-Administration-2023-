@@ -9,7 +9,7 @@ COPY Pipfile.lock .
 
 RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy --system
 
-COPY ./ .
+COPY . .
 
 EXPOSE 5000
 ENTRYPOINT ["python", "./wsgi.py"]

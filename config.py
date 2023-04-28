@@ -1,7 +1,9 @@
-secret_key = "very cool secret key"
+import os
 
-connect_vc = {'host': 'localhost',
-              'port': 5433,
+secret_key = "very cool secret key"
+connect_vc = {'host': os.getenv("DB_HOST"),
+              'port': int(os.getenv("DB_PORT")),
               'user': 'dbadmin',
-              'database': 'Vmart'
+              'password': '',
+              'database': 'VMart'
               }

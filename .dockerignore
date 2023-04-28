@@ -1,0 +1,7 @@
+.env
+.idea
+.git
+.gitignore
+.dockerignore
+__pycache__
+site-v2
