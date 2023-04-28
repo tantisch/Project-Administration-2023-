@@ -25,3 +25,6 @@ To create table inside schema use command:
 );"
 
 To create sequence inside schema use command: "create sequence trolleybus_site_database.users_seq;"
+
+## Docker-compose
+To run website and database in docker containers use command: "docker-compose up"
