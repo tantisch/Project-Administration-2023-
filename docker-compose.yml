@@ -1,16 +1,17 @@
 version: "3.9"
 
 services:
-  vertica:
+  postgres:
     environment:
-      APP_DB_USER: "dbadmin"
-      APP_DB_PASSWORD: ""
+      APP_DB_USER: "postgres"
+      APP_DB_PASSWORD: "postgres"
       TZ: "Europe/Prague"
-    container_name: vertica-ce
-    image: vertica/vertica-ce
+    build: ./database/
+#    container_name: vertica-ce
+#    image: vertica/vertica-ce
     ports:
-      - "5433:5433"
-      - "5444:5444"
+      - "5432:5432"
+#      - "5444:5444"
     networks:
       - net
 #    deploy:
@@ -18,21 +19,21 @@ services:
 
     volumes:
       - type: volume
-        source: vertica-data2
+        source: postgres-data
         target: /data
 
   website:
-    build: ./
+    build: ./website/
     ports:
       - "5000:5000"
     networks:
       - net
     environment:
-      DB_HOST: vertica
-      DB_PORT: 5433
+      DB_HOST: postgres
+      DB_PORT: 5432
 
 volumes:
-  vertica-data2:
+  postgres-data:
 
 networks:
   net:

@@ -4,9 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+psycopg2 = "*"
 flask = "*"
-flask-restful = "*"
-vertica-python = "*"
 
 [dev-packages]
 
