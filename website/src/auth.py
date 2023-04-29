@@ -29,7 +29,7 @@ def register():
         else:
             sql_query = f"""
             insert into trolleybus_site_database.users (user_id, user_email, user_password)
-            values (trolleybus_site_database.users_seq.nextval, '{email}', '{password}');
+            values (nextval('trolleybus_site_database.users_seq'), '{email}', '{password}');
             """
             cursor.execute(sql_query)
             cursor.execute("commit;")
