@@ -12,7 +12,12 @@
     <div class="wrapper header-content">
         <h1 class="header-title">Тролейбусний парк міста Д</h1>
         <nav>
-            <a href="login.html" class="login-btn">Увійти</a>
+            {% if user.is_authenticated  %}
+                <a href="logout" class="login-btn">Вийти</a>
+            {% else %}
+                <a href="login.html" class="login-btn">Увійти</a>
+            {% endif %}
+            <a href="main.html" class="login-btn">Профіль</a>
             <a href="terms_of_service.html">Умови користування</a>
             <a href="faqs.html">FAQ</a>
         </nav>
@@ -21,6 +26,15 @@
 <div class="wrapper">
     <main>
         <div class="login-container">
+
+            {# place for message of successful registration #}
+            {% with messages = get_flashed_messages() %}
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            {% endwith %}
+            {#                #}
+
             <h2>Вхід до особистого кабінету</h2>
             <form method="POST">
                 <div class="form-group">

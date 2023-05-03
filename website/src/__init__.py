@@ -1,6 +1,7 @@
 import time
 
 from flask import Flask
+from flask_login import LoginManager
 
 import config
 import psycopg2
@@ -34,10 +35,26 @@ def connect_to_database():
 
 
 def create_app():
+    connect_to_database()
+
     app = Flask(__name__)
     app.config["SECRET_KEY"] = config.secret_key
-    from .views import views
-    from .auth import auth
+
+    from src.views import views
+    from src.auth import auth
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
+
+    from src.auth import UserDatabase
+
+    login_manager = LoginManager()
+    login_manager.login_view = "auth.login"
+    login_manager.login_message = "Будь ласка увійдіть в акаунт, щоб перейти на дану сторінку."
+    login_manager.login_message_category = "warning"
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return UserDatabase.get_user_by_id(int(user_id))
+
     return app
