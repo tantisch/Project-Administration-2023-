@@ -22,16 +22,16 @@ commit;
 -- USERS
 create table trolleybus_site_database.users
 (
-    user_id       integer           not null
+    user_id       integer               not null
         primary key,
-    role_id       integer default 4 not null
+    role_id       integer     default 4 not null
         constraint users_roles_null_fk
             references trolleybus_site_database.roles,
-    user_email    varchar(64)       not null,
-    user_password varchar(64)       not null,
-    name          varchar(64),
-    surname       varchar(64),
-    surname2      varchar(64)
+    user_email    varchar(64)           not null,
+    user_password varchar(256)           not null,
+    name          varchar(64) default '',
+    surname       varchar(64) default '',
+    surname2      varchar(64) default ''
 );
 
 create sequence trolleybus_site_database.users_seq

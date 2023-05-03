@@ -1,4 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
+
+from src.auth import User
 
 views = Blueprint("views", __name__)
 
@@ -7,7 +10,18 @@ views = Blueprint("views", __name__)
 @views.route("/")
 @views.route("/main.html")
 def main():
-    return render_template("main.html")
+    if current_user.is_authenticated:
+        if current_user.role_id == 1:
+            return redirect(url_for('views.owner'))
+        elif current_user.role_id == 2:
+            return redirect(url_for('views.director'))
+        elif current_user.role_id == 3:
+            return redirect(url_for('views.driver'))
+        elif current_user.role_id == 4:
+            flash("Ви успішно увійшли в акаунт, але вам ще не назначено ролі.", category="info")
+            return redirect(url_for('auth.login'))
+    else:
+        return render_template("main.html")
 
 
 # page with general access
@@ -40,15 +54,26 @@ def contact_us():
 
 
 @views.route("/owner.html")
+@login_required
 def owner():
+    if current_user.role_id != 1:
+        return redirect(url_for("views.main"))
     return render_template("owner.html")
 
 
-@views.route("/driver.html")
-def driver():
-    return render_template("driver.html")
-
-
 @views.route("/director.html")
+@login_required
 def director():
+    if current_user.role_id > 2:
+        return redirect(url_for("views.main"))
     return render_template("director.html")
+
+
+@views.route("/driver.html")
+@login_required
+def driver():
+    if current_user.role_id > 3:
+        return redirect(url_for("views.main"))
+
+
+    return render_template("driver.html")
