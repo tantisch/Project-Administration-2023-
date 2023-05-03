@@ -3,23 +3,9 @@
 
 ## Docker
 ### Database
-To run docker image use command: "docker run -p 5433:5433 --name vertica vertica/vertica-ce"
+To build docker image use command: "docker build -t postgres database\"
 
-Then switch to different console to succeed with further steps.
-
-To access database inside docker container use command: "docker exec -it vertica /opt/vertica/bin/vsql"
-
-To create schema inside database use command: "create schema trolleybus_site_database;"
-
-To create table inside schema use command: 
-"create table trolleybus_site_database.users
-(
-    user_id int primary key,
-    user_email    varchar(64),
-    user_password varchar(64)
-);"
-
-To create sequence inside schema use command: "create sequence trolleybus_site_database.users_seq;"
+To run docker image use command: "docker run --name postgres -it -p 5432:5432 postgres"
 
 ## Docker-compose
 To run website and database in docker containers at once use command: "docker-compose up"
