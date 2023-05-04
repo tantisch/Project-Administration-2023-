@@ -122,17 +122,17 @@ drop trigger if exists set_owner_role_trigger on trolleybus_site_database.users;
 drop trigger if exists unset_owner_role_trigger on trolleybus_site_database.users;
 
 create trigger set_owner_role_trigger
-    after insert or update
+    after update
     on trolleybus_site_database.users
     for each row
-    when (new.role_id = 1)
+    when (new.role_id = 1 and new.role_id != old.role_id)
 execute procedure trolleybus_site_database.set_owner_role();
 
 create trigger unset_owner_role_trigger
     after update
     on trolleybus_site_database.users
     for each row
-    when (old.role_id = 1)
+    when (old.role_id = 1 and new.role_id != old.role_id)
 execute procedure trolleybus_site_database.unset_owner_role();
 ----------------------------------------------------------------
 
@@ -213,17 +213,17 @@ drop trigger if exists set_director_role_trigger on trolleybus_site_database.use
 drop trigger if exists unset_director_role_trigger on trolleybus_site_database.users;
 
 create trigger set_director_role_trigger
-    after insert or update
+    after update
     on trolleybus_site_database.users
     for each row
-    when (new.role_id = 2)
+    when (new.role_id = 2 and new.role_id != old.role_id)
 execute procedure trolleybus_site_database.set_director_role();
 
 create trigger unset_director_role_trigger
     after update
     on trolleybus_site_database.users
     for each row
-    when (old.role_id = 2)
+    when (old.role_id = 2 and new.role_id != old.role_id)
 execute procedure trolleybus_site_database.unset_director_role();
 ----------------------------------------------------------------
 
@@ -340,17 +340,17 @@ drop trigger if exists set_driver_role_trigger on trolleybus_site_database.users
 drop trigger if exists unset_driver_role_trigger on trolleybus_site_database.users;
 
 create trigger set_driver_role_trigger
-    after insert or update
+    after update
     on trolleybus_site_database.users
     for each row
-    when (new.role_id = 3)
+    when (new.role_id = 3 and new.role_id != old.role_id)
 execute procedure trolleybus_site_database.set_driver_role();
 
 create trigger unset_driver_role_trigger
     after update
     on trolleybus_site_database.users
     for each row
-    when (old.role_id = 3)
+    when (old.role_id = 3 and new.role_id != old.role_id)
 execute procedure trolleybus_site_database.unset_driver_role();
 ----------------------------------------------------------------
 
