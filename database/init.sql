@@ -35,7 +35,7 @@ create table trolleybus_site_database.users
         constraint users_roles_null_fk
             references trolleybus_site_database.roles,
     user_email    varchar(64)           not null,
-    user_password varchar(256)          not null,
+    user_password varchar(256)           not null,
     name          varchar(64) default '',
     surname       varchar(64) default '',
     surname2      varchar(64) default ''
