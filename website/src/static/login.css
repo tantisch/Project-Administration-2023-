@@ -11,11 +11,37 @@ body {
     height: 100%;
 }
 
+.wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    flex: 1;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
 .login-container {
     border-radius: 10px;
     border: 1px solid #ccc;
     background-color: #fff;
-    padding: 2rem;
+    padding: 1.2rem;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    max-height: calc(100% - 4rem);
+    overflow-y: auto;
+}
+
+/* .login-container {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 1.2rem;
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
@@ -24,31 +50,31 @@ body {
     justify-content: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: absolute;
-    top: 45%;
+    top: 47.5%;
     left: 50%;
     transform: translate(-50%, -50%);
-}
+} */
 
 .form-group {
     display: flex;
     flex-direction: column;
-    margin-bottom: 1rem;
+    margin-bottom: 0.3rem;
     width: 100%;
 }
 
 label {
     font-weight: bold;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
 }
 
 input[type="text"],
 input[type="password"] {
-    padding: 0.5rem;
+    padding: 0.4rem;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1rem;
-    margin-bottom: 0.5rem;
-    width: 100%;
+    margin-bottom: 0.1rem;
+    width: 97%;
 }
 
 .login-form-btn {
@@ -83,3 +109,31 @@ input[type="password"] {
 .login-form-btn:hover {
     background-color: #333;
 } 
+
+
+@media screen and (max-width: 600px) {
+    .login-container {
+        width: 80%;
+        box-sizing: border-box;
+        padding: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        font-size: 0.9rem;
+        width: 100%;
+    }
+
+    label {
+        font-size: 0.9rem;
+    }
+
+    .login-form-btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+}

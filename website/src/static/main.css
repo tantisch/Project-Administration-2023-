@@ -120,3 +120,49 @@ main li a:hover {
 .link:hover {
     text-decoration: underline; /* Додаємо підчеркування при наведенні */
 }
+
+
+
+
+/* for phones */
+/* Медіазапит для мобільних пристроїв з шириною екрану до 768px */
+@media screen and (max-width: 600px) {
+    .wrapper {
+        padding: 0 0.5rem;
+    }
+
+    /* Додаємо цей код, щоб змінити відступи для хедера */
+    header .wrapper {
+        padding: 0;
+    }
+
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-title {
+        margin-bottom: 1rem;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    nav a,
+    .login-btn {
+        margin-bottom: 1rem;
+        font-size: 0.8rem;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-links a {
+        margin-bottom: 1rem;
+        font-size: 0.8rem;
+    }
+}
