@@ -1,9 +1,6 @@
 create schema trolleybus_site_database;
 
 
-
-
-
 -- ROLES
 create table trolleybus_site_database.roles
 (
@@ -21,6 +18,7 @@ insert into trolleybus_site_database.roles(role_id, role_name)
 values (4, 'no-role');
 
 commit;
+----------------------------------------------------------------
 
 
 
@@ -35,7 +33,7 @@ create table trolleybus_site_database.users
         constraint users_roles_null_fk
             references trolleybus_site_database.roles,
     user_email    varchar(64)           not null,
-    user_password varchar(256)           not null,
+    user_password varchar(256)          not null,
     name          varchar(64) default '',
     surname       varchar(64) default '',
     surname2      varchar(64) default ''
@@ -72,7 +70,6 @@ create sequence trolleybus_site_database.owners_seq
     start 1;
 
 alter sequence trolleybus_site_database.owners_seq cache 1;
-----------------------------------------------------------------
 
 
 -- SET OWNER ROLE FUNCTION
@@ -94,7 +91,6 @@ BEGIN
     return new;
 END;
 $$;
-----------------------------------------------------------
 
 
 -- UNSET OWNER ROLE FUNCTION
@@ -113,7 +109,6 @@ BEGIN
     return new;
 END;
 $$;
-----------------------------------------------------------------
 
 
 -- TRIGGERS FOR USERS TO UPDATE ROLE TO owner
@@ -143,15 +138,12 @@ execute procedure trolleybus_site_database.unset_owner_role();
 -- DIRECTORS
 create table trolleybus_site_database.directors
 (
-    director_id            integer not null
+    director_id integer not null
         primary key,
-    user_id                integer
+    user_id     integer
         constraint directors_users_user_id_fk
             references trolleybus_site_database.users,
-    owner_id               integer
-        constraint directors_owners_null_fk
-            references trolleybus_site_database.owners,
-    is_active              boolean default false
+    is_active   boolean default false
 );
 
 
@@ -163,7 +155,6 @@ create sequence trolleybus_site_database.directors_seq
     start 1;
 
 alter sequence trolleybus_site_database.directors_seq cache 1;
-----------------------------------------------------------------
 
 
 -- SET DIRECTOR ROLE FUNCTION
@@ -185,7 +176,6 @@ BEGIN
     return new;
 END;
 $$;
-----------------------------------------------------------
 
 
 -- UNSET director ROLE FUNCTION
@@ -204,7 +194,6 @@ BEGIN
     return new;
 END;
 $$;
-----------------------------------------------------------------
 
 
 -- TRIGGERS FOR USERS TO UPDATE ROLE TO DIRECTOR
@@ -291,7 +280,6 @@ create sequence trolleybus_site_database.drivers_seq
     start 1;
 
 alter sequence trolleybus_site_database.drivers_seq cache 1;
-----------------------------------------------------------------
 
 
 -- SET DRIVER ROLE FUNCTION
@@ -313,7 +301,7 @@ BEGIN
     return new;
 END;
 $$;
-----------------------------------------------------------
+
 
 -- UNSET DRIVER ROLE FUNCTION
 create or replace function trolleybus_site_database.unset_driver_role()
@@ -331,7 +319,6 @@ BEGIN
     return new;
 END;
 $$;
-----------------------------------------------------------------
 
 
 -- TRIGGERS FOR USERS TO UPDATE ROLE TO DRIVER
@@ -356,19 +343,115 @@ execute procedure trolleybus_site_database.unset_driver_role();
 
 
 
+
+
 -- TEST USERS CREATION
-insert into trolleybus_site_database.users (user_id, user_email, user_password)
-values (nextval('trolleybus_site_database.users_seq'), 'chel2@gmail.com', '12345');
+insert into trolleybus_site_database.users (user_id, user_email, user_password, name, surname, surname2)
+values (-1, 'chel1@gmail.com', '12345', 'chel1_name', 'chel1_surname', 'chel1_surname2');
 
 
-insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password)
-values (-1, 4, 'chel-1@gmail.com', '12345');
+insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password, name, surname, surname2)
+values (-2, 4, 'chel2@gmail.com', '12345', 'chel2_name', 'chel2_surname', 'chel2_surname2');
+----------------------------------------------------------------
 
 
-insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password)
-values (nextval('trolleybus_site_database.users_seq'), 1, 'alex', '123');
 
-insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password)
-values (nextval('trolleybus_site_database.users_seq'), 1, 'judge', '123');
+
+
+-- ADD OWNERS
+insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password, name, surname, surname2)
+values (-3, 1, 'user', '123', 'user_name', 'user_surname', 'user_surname2');
+
+insert into trolleybus_site_database.owners (owner_id, user_id, is_active)
+values (-1, -3, true);
+
+
+insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password, name, surname, surname2)
+values (-4, 1, 'judge', '123', 'judge_name', 'judge_surname',
+        'judge_surname2');
+
+insert into trolleybus_site_database.owners (owner_id, user_id, is_active)
+values (-2, -4, true);
+----------------------------------------------------------------
+
+
+
+
+
+-- ADD DIRECTORS
+
+insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password, name, surname, surname2)
+values (-5, 2, 'director1', '123', 'director1_name', 'director1_surname', 'director1_surname2');
+
+insert into trolleybus_site_database.directors (director_id, user_id, is_active)
+values (-1, -5, true);
+
+
+insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password, name, surname, surname2)
+values (-6, 2, 'director2', '123', 'director2_name', 'director2_surname', 'director2_surname2');
+
+insert into trolleybus_site_database.directors (director_id, user_id, is_active)
+values (-2, -6, true);
+----------------------------------------------------------------
+
+
+
+
+
+-- ADD DRIVERS
+do
+$$
+    declare
+        director_id_ int;
+    begin
+        for i in 1..10
+            loop
+                if (i % 2) = 0
+                then
+                    director_id_ = -1;
+                else
+                    director_id_ = -2;
+                end if;
+
+                insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password, name, surname, surname2)
+                values (-6 - i, 3, 'driver' || i, '123',
+                        'driver' || i || '_name',
+                        'driver' || i || '_surname',
+                        'driver' || i || '_surname2');
+
+                insert into trolleybus_site_database.drivers (driver_id, route_id, user_id, worked_hours, rest_hours,
+                                                              director_id, is_active)
+                values (-i,
+                        -1 + floor(5 * random()),
+                        -6 - i,
+                        round((8 * random())::numeric, 1),
+                        round((4 * random())::numeric, 1),
+                        director_id_,
+                        true);
+            end loop;
+    end
+$$;
+----------------------------------------------------------------
+
+
+
+
+
+-- ADD NO-ROLE ACCOUNTS
+do
+$$
+    begin
+        for i in 1..10
+            loop
+                insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password, name, surname, surname2)
+                values (-16 - i, 4, 'user' || i, '123',
+                        'user' || i || '_name',
+                        'user' || i || '_surname',
+                        'user' || i || '_surname2');
+            end loop;
+    end
+$$;
+----------------------------------------------------------------
+
 
 commit;
