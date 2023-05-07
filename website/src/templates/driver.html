@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Інформація про водія</title>
     <link rel="stylesheet" href="../static/main.css">
+    <link rel="stylesheet" href="../static/login.css">
 </head>
 
 <body>
@@ -22,11 +23,25 @@
 </header>
 <div class="wrapper">
     <main>
+        {% if take_away_role_url %}
+            <nav><a href="{{ take_away_role_url }}" class="login-btn">Забрати роль.</a></nav>
+        {% endif %}
         <h2>Інформація про водія</h2>
-            {% if driver_obj %}
-                <p>Ім'я та прізвище водія:
+        {% if driver_obj %}
+            <p>Ім'я та прізвище водія:
                 <strong>{{ driver_obj.name }} {{ driver_obj.surname }} {{ driver_obj.surname2 }}</strong></p>
-            {% endif %}
+        {% endif %}
+
+        {# place for message#}
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <strong>{{ message }}</strong>
+            {% endfor %}
+        {% endwith %}
+
+        {#        #}
+        {#                #}
 
         <!-- Code below has to generated  -->
         {% if driver_obj %}
@@ -39,20 +54,35 @@
                 </ul>
             {% endif %}
         {% endif %}
-        {# place for message#}
-
-        {% with messages = get_flashed_messages() %}
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
-        {% endwith %}
-
-        {#        #}
-        {#                #}
 
         {% if driver_obj %}
             <p>Відпрацьовані години: <strong>{{ driver_obj.worked_hours }} годин</strong></p>
+            {% if director_obj or owner_obj %}
+                <p>
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="worked_hours">Відпрацьовані години:</label>
+                        <input type="text" id="worked_hours" name="worked_hours">
+                        <button class="login-form-btn">Встановити відпрацьовані години</button>
+                    </div>
+                </form>
+                </p>
+            {% endif %}
+
             <p>Час відпочинку: <strong>{{ driver_obj.rest_hours }} годин</strong></p>
+
+            {% if director_obj or owner_obj %}
+                <p>
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="rest_hours">Час відпочинку:</label>
+                        <input type="text" id="rest_hours" name="rest_hours">
+                        <button class="login-form-btn">Встановити час відпочинку</button>
+                    </div>
+                </form>
+                </p>
+            {% endif %}
+
         {% endif %}
     </main>
 </div>

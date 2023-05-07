@@ -13,6 +13,9 @@ def register():
         user_email = request.form.get("email")
         user_password = request.form.get("password")
         confirm_password = request.form.get("confirm-password")
+        name = request.form.get("name")
+        surname = request.form.get("surname")
+        surname2 = request.form.get("surname2")
 
         user = UserDatabase.get_user_by_email(user_email)
 
@@ -27,7 +30,8 @@ def register():
         else:
             # user = User(email, generate_password_hash(password, method="scrypt"))
             UserDatabase.add_user(user_email=user_email,
-                                  user_password=generate_password_hash(user_password, method="scrypt"))
+                                  user_password=generate_password_hash(user_password, method="scrypt"),
+                                  name=name, surname=surname, surname2=surname2)
 
             flash("Користувач був успішно створений!", category="info")
             user = UserDatabase.get_user_by_email(user_email)

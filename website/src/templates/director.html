@@ -6,54 +6,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Інформація для працівника транспортного відділу</title>
     <link rel="stylesheet" href="../static/main.css">
-    
+
 </head>
 
 <body>
-    <header>
-        <div class="wrapper header-content">
-            <h1 class="header-title">Тролейбусний парк міста Д</h1>
-            <nav>
-                <a href="logout" class="login-btn">Вийти</a>
-                <a href="main.html" class="login-btn">Профіль</a>
-                <a href="terms_of_service.html">Умови користування</a>
-                <a href="faqs.html">FAQ</a>
-            </nav>
-        </div>
-    </header>
-    <div class="wrapper">
-        <main>
-            <h2>Інформація для працівника транспортного відділу</h2>
-            <p>Ласкаво просимо, Петро Іванович!</p>
-            <p>Ви маєте доступ до звітності наступної зміни:</p>
-            <!-- Code below has to be generated -->
-            <ul>
-                <li>Водій Василь Петрович</li>
-                <li>Водій Оксана Іванівна</li>
-                <li>Водій Ігор Миколайович</li>
-            </ul>
-            <p>Для отримання детальної інформації про кожного водія, будь ласка, перейдіть на відповідну сторінку:</p>
-            <ul>
-                <li><a href="driver.html" class = "link">Інформація про водія Петро Іванович</a></li>
-            </ul>
-            <h3>Працівники у який немає ролей:</h3>
-            <!-- this <ul> </ul> has to be generated -->
-            <ul>
-                <li><a href="promotion.html" class="link">Петро Iгорович</a></li>
-                <!-- <li><a href="director2.html" class="link">Марія Сергіївна</a></li>
-                <li><a href="director3.html" class="link">Олександр Володимирович</a></li> -->
-            </ul>
-        </main>
-    </div>
-    <footer>
-        <div class="footer-links">
-            <a href="about.html">Про нас</a>
-            <a href="contact.html">Контакти</a>
+<header>
+    <div class="wrapper header-content">
+        <h1 class="header-title">Тролейбусний парк міста Д</h1>
+        <nav>
+            <a href="logout" class="login-btn">Вийти</a>
+            <a href="main.html" class="login-btn">Профіль</a>
             <a href="terms_of_service.html">Умови користування</a>
-            <a href="privacy_policy.html">Політика конфіденційності</a>
-        </div>
-        <p>&copy; Тролейбусний парк міста Д. Всі права захищені.</p>
-    </footer>
+            <a href="faqs.html">FAQ</a>
+        </nav>
+    </div>
+</header>
+<div class="wrapper">
+    <main>
+        {% if take_away_role_url %}
+            <nav><a href="{{ take_away_role_url }}" class="login-btn">Забрати роль.</a></nav>
+        {% endif %}
+
+        <h2>Інформація для працівника транспортного відділу</h2>
+        {% if director_obj %}
+            <p>Ласкаво просимо,
+                <strong>{{ director_obj.name }} {{ director_obj.surname }} {{ director_obj.surname2 }}</strong></p>
+        {% endif %}
+
+        {% if drivers %}
+            <p>Для отримання детальної інформації про кожного водія, будь ласка, перейдіть на відповідну сторінку.</p>
+        {% else %}
+            <p>У вас поки немає водіїв закріплених за вами.</p>
+        {% endif %}
+        {#        <p>Ви маєте доступ до звітності наступної зміни:</p>#}
+        <!-- Code below has to be generated -->
+        <ul>
+            {% for driver in drivers %}
+                <li><a href="{{ drivers_urls[loop.index0] }}" class="link">Інформація про
+                    водія <strong>{{ driver.name }} {{ driver.surname }} {{ driver.surname2 }}</strong></a></li>
+            {% endfor %}
+
+        </ul>
+        <h3>Працівники у який немає ролей:</h3>
+        <!-- this <ul> </ul> has to be generated -->
+        <ul>
+            {% for user in no_role_users %}
+                <li><a href="{{ no_role_users_urls[loop.index0] }}" class="link">Інформація про
+                    водія <strong>{{ user.name }} {{ user.surname }} {{ user.surname2 }}</strong></a></li>
+            {% endfor %}
+        </ul>
+    </main>
+</div>
+<footer>
+    <div class="footer-links">
+        <a href="about.html">Про нас</a>
+        <a href="contact.html">Контакти</a>
+        <a href="terms_of_service.html">Умови користування</a>
+        <a href="privacy_policy.html">Політика конфіденційності</a>
+    </div>
+    <p>&copy; Тролейбусний парк міста Д. Всі права захищені.</p>
+</footer>
 </body>
 
 </html>

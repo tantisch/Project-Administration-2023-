@@ -55,6 +55,6 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        return UserDatabase.get_user_by_id(int(user_id))
+        return UserDatabase.get_user_by_user_id(int(user_id))
 
     return app
