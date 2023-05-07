@@ -9,44 +9,63 @@
 </head>
 
 <body>
-    <header>
-        <div class="wrapper header-content">
-            <h1 class="header-title">Тролейбусний парк міста Д</h1>
-            <nav>
-                <a href="logout" class="login-btn">Вийти</a>
-                <a href="main.html" class="login-btn">Профіль</a>
-                <a href="terms_of_service.html">Умови користування</a>
-                <a href="faqs.html">FAQ</a>
-            </nav>
-        </div>
-    </header>
-    <div class="wrapper">
-        <main>
-            <h2>Інформація про водія</h2>
-            <p>Ім'я та прізвище водія: <strong>Петро Іванович</strong></p>
-            <!-- Code below has to generated  -->
-            <p>Маршрут на сьогодні:</p>
-            <ul>
-                <li>Зупинка А</li>
-                <li>Зупинка Б</li>
-                <li>Зупинка В</li>
-                <li>Зупинка Г</li>
-                <li>Зупинка Д</li>
-            </ul>
-            <p>Відпрацьовані години: <strong>8 годин</strong></p>
-            <p>Час відпочинку: <strong>30 хвилин</strong></p>
-        </main>
-    </div>
-    <footer>
-        <div class="footer-links">
-            <a href="about.html">Про нас</a>
-            <a href="contact.html">Контакти</a>
+<header>
+    <div class="wrapper header-content">
+        <h1 class="header-title">Тролейбусний парк міста Д</h1>
+        <nav>
+            <a href="logout" class="login-btn">Вийти</a>
+            <a href="main.html" class="login-btn">Профіль</a>
             <a href="terms_of_service.html">Умови користування</a>
-            <a href="privacy_policy.html">Політика конфіденційності</a>
-        </div>
-        <p>&copy; Тролейбусний парк міста Д. Всі права захищені.</p>
-        <p>Користувач: <strong>Петро Іванович</strong></p>
-    </footer>
+            <a href="faqs.html">FAQ</a>
+        </nav>
+    </div>
+</header>
+<div class="wrapper">
+    <main>
+        <h2>Інформація про водія</h2>
+            {% if driver_obj %}
+                <p>Ім'я та прізвище водія:
+                <strong>{{ driver_obj.name }} {{ driver_obj.surname }} {{ driver_obj.surname2 }}</strong></p>
+            {% endif %}
+
+        <!-- Code below has to generated  -->
+        {% if driver_obj %}
+            {% if driver_obj.stations %}
+                <p>Маршрут на сьогодні:</p>
+                <ul>
+                    {% for station in driver_obj.stations %}
+                        <li>Зупинка: {{ station }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
+        {# place for message#}
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endwith %}
+
+        {#        #}
+        {#                #}
+
+        {% if driver_obj %}
+            <p>Відпрацьовані години: <strong>{{ driver_obj.worked_hours }} годин</strong></p>
+            <p>Час відпочинку: <strong>{{ driver_obj.rest_hours }} годин</strong></p>
+        {% endif %}
+    </main>
+</div>
+<footer>
+    <div class="footer-links">
+        <a href="about.html">Про нас</a>
+        <a href="contact.html">Контакти</a>
+        <a href="terms_of_service.html">Умови користування</a>
+        <a href="privacy_policy.html">Політика конфіденційності</a>
+    </div>
+    <p>&copy; Тролейбусний парк міста Д. Всі права захищені.</p>
+    <p>Користувач: <strong>{{ driver_obj.name }} {{ driver_obj.surname }} {{ driver_obj.surname2 }}</strong></p>
+</footer>
 </body>
 
 </html>
