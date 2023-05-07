@@ -6,42 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Інформація про працівника без ролі</title>
     <link rel="stylesheet" href="../static/main.css">
-    
+
 </head>
 
 <body>
-    <header>
-        <div class="wrapper header-content">
-            <h1 class="header-title">Тролейбусний парк міста Д</h1>
-            <nav>
-                <a href="logout" class="login-btn">Вийти</a>
-                <a href="main.html" class="login-btn">Профіль</a>
-                <a href="terms_of_service.html">Умови користування</a>
-                <a href="faqs.html">FAQ</a>
-            </nav>
-        </div>
-    </header>
-    <div class="wrapper">
-        <main>
-            <h2>Інформація про працівника без ролі</h2>
-            <p>Петро Ігорович</p>
-            <p><a href="mailto:email@gmail.com" class="link">email@gmail.com</a></p>
-            <nav>
-                <a class="login-btn">Дати роль "Працівник транспортного віддлу"</a>
-                <a class="login-btn">Дати роль "Водій"</a>
-            </nav>
-            
-        </main>
-    </div>
-    <footer>
-        <div class="footer-links">
-            <a href="about.html">Про нас</a>
-            <a href="contact.html">Контакти</a>
+<header>
+    <div class="wrapper header-content">
+        <h1 class="header-title">Тролейбусний парк міста Д</h1>
+        <nav>
+            <a href="logout" class="login-btn">Вийти</a>
+            <a href="main.html" class="login-btn">Профіль</a>
             <a href="terms_of_service.html">Умови користування</a>
-            <a href="privacy_policy.html">Політика конфіденційності</a>
-        </div>
-        <p>&copy; Тролейбусний парк міста Д. Всі права захищені.</p>
-    </footer>
+            <a href="faqs.html">FAQ</a>
+        </nav>
+    </div>
+</header>
+<div class="wrapper">
+    <main>
+        <h2>Інформація про працівника без ролі</h2>
+        <p><strong>{{ user_obj.name }} {{ user_obj.surname }} {{ user_obj.surname2 }}</strong></p>
+        <p>Email:<a href="{{ user_obj.email }}" class="link">{{ user_obj.email }}</a></p>
+        <nav>
+            {% if current_user.role_id == 1 %}
+                <a href="{{ grant_owner_role_url }}" class="login-btn">Дати роль "Власник"</a>
+                <a href="{{ grant_director_role_url }}" class="login-btn">Дати роль "Працівник транспортного віддлу"</a>
+            {% endif %}
+            {% if current_user.role_id == 2 %}
+                <a href="{{ grant_driver_role_url }}" class="login-btn">Дати роль "Водій"</a>
+            {% endif %}
+
+        </nav>
+
+    </main>
+</div>
+<footer>
+    <div class="footer-links">
+        <a href="about.html">Про нас</a>
+        <a href="contact.html">Контакти</a>
+        <a href="terms_of_service.html">Умови користування</a>
+        <a href="privacy_policy.html">Політика конфіденційності</a>
+    </div>
+    <p>&copy; Тролейбусний парк міста Д. Всі права захищені.</p>
+</footer>
 </body>
 
 </html>

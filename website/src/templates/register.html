@@ -8,61 +8,69 @@
     <link rel="stylesheet" href="../static/login.css">
 </head>
 <body>
-    <header>
-        <div class="wrapper header-content">
-            <h1 class="header-title">Тролейбусний парк міста Д</h1>
-            <nav>
-                <a href="login.html" class="login-btn">Увійти</a>
-                <a href="terms_of_service.html">Умови користування</a>
-                <a href="faqs.html">FAQ</a>
-            </nav>
-        </div>
-    </header>
-    <div class="wrapper">
-        <main>
-            <div class="login-container">
-                <h2>Реєстрація нового користувача</h2>
-                <form>
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="text" id="email" name="email">
-                    </div>
-                    <div class="form-group">
-                        <label for="name">Name:</label>
-                        <input type="text" id="email" name="email">
-                    </div>
-                    <div class="form-group">
-                        <label for="surname">Surname:</label>
-                        <input type="text" id="email" name="email">
-                    </div>
-                    <div class="form-group">
-                        <label for="surname">Surname2:</label>
-                        <input type="text" id="email" name="email">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Пароль:</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirm-password">Підтвердіть пароль:</label>
-                        <input type="password" id="confirm-password" name="confirm-password" required>
-                    </div>
-                    <button class="login-form-btn">Зареєструватися</button>
-                </form>
-                <div class="register-link">
-                    <a href="login.html">Вже маєте обліковий запис? Увійти</a>
-                </div>
-            </div>
-        </main>
-    </div>
-    <footer>
-        <div class="footer-links">
-            <a href="about.html">Про нас</a>
-            <a href="contact.html">Контакти</a>
+<header>
+    <div class="wrapper header-content">
+        <h1 class="header-title">Тролейбусний парк міста Д</h1>
+        <nav>
+            <a href="login.html" class="login-btn">Увійти</a>
             <a href="terms_of_service.html">Умови користування</a>
-            <a href="privacy_policy.html">Політика конфіденційності</a>
+            <a href="faqs.html">FAQ</a>
+        </nav>
+    </div>
+</header>
+<div class="wrapper">
+    <main>
+        <div class="login-container">
+            {# place for message of successful registration #}
+            {% with messages = get_flashed_messages() %}
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            {% endwith %}
+            {#                #}
+
+            <h2>Реєстрація нового користувача</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name">
+                </div>
+                <div class="form-group">
+                    <label for="surname">Surname:</label>
+                    <input type="text" id="surname" name="surname">
+                </div>
+                <div class="form-group">
+                    <label for="surname2">Surname2:</label>
+                    <input type="text" id="surname2" name="surname2">
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Підтвердіть пароль:</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                </div>
+                <button class="login-form-btn">Зареєструватися</button>
+            </form>
+            <div class="register-link">
+                <a href="login.html">Вже маєте обліковий запис? Увійти</a>
+            </div>
         </div>
-        <p>&copy; Тролейбусний парк міста Д. Всі права захищені.</p>
-    </footer>
+    </main>
+</div>
+<footer>
+    <div class="footer-links">
+        <a href="about.html">Про нас</a>
+        <a href="contact.html">Контакти</a>
+        <a href="terms_of_service.html">Умови користування</a>
+        <a href="privacy_policy.html">Політика конфіденційності</a>
+    </div>
+    <p>&copy; Тролейбусний парк міста Д. Всі права захищені.</p>
+</footer>
 </body>
 </html>
