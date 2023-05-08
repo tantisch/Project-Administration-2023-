@@ -260,8 +260,8 @@ create table trolleybus_site_database.drivers
     user_id      integer not null
         constraint drivers_users_null_fk
             references trolleybus_site_database.users,
-    worked_hours float,
-    rest_hours   float,
+    worked_hours float default 0.0,
+    rest_hours   float default 0.0,
     route_id     integer default -1
         constraint drivers_routes_null_fk
             references trolleybus_site_database.routes,
