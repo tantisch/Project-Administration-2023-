@@ -186,7 +186,18 @@ def take_away_role():
     user_id = int(user_id)
     user_obj = UserDatabase.get_user_by_user_id(user_id)
     if user_obj.role_id != 4:
-        UserDatabase.take_away_role_by_user_id(user_id)
+        if user_obj.role_id == 3:
+            UserDatabase.take_away_role_by_user_id(user_obj.id)
+        elif user_obj.role_id == 2:
+            director_obj = DirectorDatabase.get_director_by_user_id(user_obj.id)
+            drivers_objs = DirectorDatabase.get_drivers_by_director_id(director_obj.id)
+            for driver_obj in drivers_objs:
+                driver_user_id = DriverDatabase.get_user_id_by_driver_id(driver_obj.id)
+                UserDatabase.take_away_role_by_user_id(driver_user_id)
+
+            director_user_id = DirectorDatabase.get_user_id_by_director_id(director_obj.id)
+            UserDatabase.take_away_role_by_user_id(director_user_id)
+
     return redirect(url_for("views.main"))
 
 
