@@ -31,6 +31,9 @@
         {% if director_obj %}
             <p>Ласкаво просимо,
                 <strong>{{ director_obj.name }} {{ director_obj.surname }} {{ director_obj.surname2 }}</strong></p>
+            <nav>
+                <a class="login-btn" href="{{ end_day_url }}">Зберегти інформацію про водіїв та завершити день.</a>
+            </nav>
         {% endif %}
 
         {% if drivers %}

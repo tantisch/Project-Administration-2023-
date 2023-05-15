@@ -4,7 +4,7 @@ from typing import List
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 
-from src.models import DriverDatabase, Driver, User, DirectorDatabase, Director, UserDatabase, OwnerDatabase, Owner
+from src.models import DriverDatabase, Driver, User, DirectorDatabase, Director, UserDatabase, OwnerDatabase, Owner, LCU
 
 views = Blueprint("views", __name__)
 
@@ -75,28 +75,47 @@ def director():
     director_obj: Director = None
     drivers: List[Driver] = None
     drivers_urls: List[str] = None
-    no_role_users: List[User] = None
     no_role_users_urls: List[str] = None
     take_away_role_url: str = None
+    end_day_url: str = None
+
+    no_role_users = UserDatabase.get_all_no_role_users()
 
     if current_user.role_id == 2:
         director_obj = DirectorDatabase.get_director_by_user_id(current_user.id)
+        no_role_users_urls = [f"promotion.html?user_id={u.id}" for u in no_role_users]
     else:
         # current_user.role_id == 1
         director_id = int(request.args.get("id"))
         director_obj = DirectorDatabase.get_director_by_director_id(director_id)
         director_user_id = DirectorDatabase.get_user_id_by_director_id(director_id)
         take_away_role_url = f"/take_away_role?user_id={director_user_id}"
+        no_role_users_urls = [f"promotion.html?user_id={u.id}&director_id={director_id}" for u in no_role_users]
 
     drivers: List[Driver] = DirectorDatabase.get_drivers_by_director_id(director_obj.id)
     drivers_urls = [f"driver.html?id={d.id}" for d in drivers]
-
-    no_role_users = UserDatabase.get_all_no_role_users()
-    no_role_users_urls = [f"promotion.html?user_id={u.id}" for u in no_role_users]
+    end_day_url = f"end_day?director_id={director_obj.id}"
 
     return render_template("director.html", director_obj=director_obj, drivers=drivers, drivers_urls=drivers_urls,
                            no_role_users=no_role_users, no_role_users_urls=no_role_users_urls,
-                           take_away_role_url=take_away_role_url)
+                           take_away_role_url=take_away_role_url,
+                           end_day_url=end_day_url)
+
+
+@views.route("/end_day")
+@login_required
+def end_day():
+    if current_user.role_id not in [1, 2]:
+        return redirect(url_for("views.main"))
+
+    director_id = request.args.get("director_id")
+    if director_id is not None:
+        director_id = int(director_id)
+    else:
+        return redirect(url_for("views.main"))
+
+    DirectorDatabase.end_day(director_id)
+    return redirect(url_for("views.main"))
 
 
 @views.route("/promotion.html")
@@ -107,41 +126,63 @@ def promotion():
         return redirect(url_for("views.main"))
 
     user_id = int(user_id)
+
+    director_id = request.args.get("director_id")
+    grant_driver_role_with_director_url = None
+    director_obj = None
+    if director_id is not None:
+        director_id = int(director_id)
+        director_obj = DirectorDatabase.get_director_by_director_id(director_id)
+        grant_driver_role_with_director_url = f"/grant_driver_role?user_id={user_id}&director_id={director_id}"
+
     user_obj = UserDatabase.get_user_by_user_id(user_id)
     grant_driver_role_url = f"/grant_driver_role?user_id={user_id}"
     grant_director_role_url = f"/grant_director_role?user_id={user_id}"
     grant_owner_role_url = f"/grant_owner_role?user_id={user_id}"
 
-    return render_template("promotion.html", user_obj=user_obj, current_user=current_user,
+    return render_template("promotion.html", user_obj=user_obj, current_user=current_user, director_obj=director_obj,
                            grant_driver_role_url=grant_driver_role_url,
                            grant_director_role_url=grant_director_role_url,
-                           grant_owner_role_url=grant_owner_role_url)
+                           grant_owner_role_url=grant_owner_role_url,
+                           grant_driver_role_with_director_url=grant_driver_role_with_director_url)
 
 
 @views.route("/grant_driver_role")
 @login_required
 def grant_driver_role():
     # function expects url like that "/grant_driver_role?user_id=-8"
+    # or like that "/grant_driver_role?user_id=-8&director_id=-2"
+
+    director_id = request.args.get("director_id")
 
     user_id = request.args.get("user_id")
-    if user_id is None or current_user.role_id != 2:
+    if user_id is None or current_user.role_id not in [1, 2]:
         return redirect(url_for("views.main"))
 
     user_id = int(user_id)
     user_obj = UserDatabase.get_user_by_user_id(user_id)
+
     if user_obj.role_id == 4:
         UserDatabase.grant_driver_role_by_user_id(user_id)
 
         driver_obj = DriverDatabase.get_driver_by_user_id(user_id)
-        director_obj = DirectorDatabase.get_director_by_user_id(current_user.id)
+
+        # director_id is unset in url arguments
+        if director_id is None:
+            director_obj = DirectorDatabase.get_director_by_user_id(current_user.id)
+        # director_id is set in url arguments
+        else:
+            director_id = int(director_id)
+            director_obj = DirectorDatabase.get_director_by_director_id(director_id)
 
         DriverDatabase.set_director_id_by_driver_id(director_id=director_obj.id, driver_id=driver_obj.id)
 
         # hard code TODO: have to be remade sometime
         route_id = random.choice([-1, 0, 1, 2, 3, 4])
         #
+        driver_obj.set_driver_route_id()
 
-        DriverDatabase.set_route_id_by_driver_id(route_id=route_id, driver_id=driver_obj.id)
+        DriverDatabase.set_route_id_by_driver_id(route_id=driver_obj.route_id, driver_id=driver_obj.id)
     return redirect(url_for("views.main"))
 
 
@@ -186,14 +227,16 @@ def take_away_role():
     user_id = int(user_id)
     user_obj = UserDatabase.get_user_by_user_id(user_id)
     if user_obj.role_id != 4:
+        # driver
         if user_obj.role_id == 3:
-            UserDatabase.take_away_role_by_user_id(user_obj.id)
+            UserDatabase.take_away_role_by_user_id(user_obj.id, role_id=3)
+        # director
         elif user_obj.role_id == 2:
             director_obj = DirectorDatabase.get_director_by_user_id(user_obj.id)
             drivers_objs = DirectorDatabase.get_drivers_by_director_id(director_obj.id)
             for driver_obj in drivers_objs:
                 driver_user_id = DriverDatabase.get_user_id_by_driver_id(driver_obj.id)
-                UserDatabase.take_away_role_by_user_id(driver_user_id)
+                UserDatabase.take_away_role_by_user_id(driver_user_id, role_id=3)
 
             director_user_id = DirectorDatabase.get_user_id_by_director_id(director_obj.id)
             UserDatabase.take_away_role_by_user_id(director_user_id)
@@ -246,12 +289,17 @@ def driver():
                 driver_obj = None
                 return render_template("driver.html", driver_obj=driver_obj, director_obj=director_obj)
 
+            if driver_obj.worked_hours > LCU.max_worked_hours:
+                driver_obj.set_driver_route_id(-1)
+                driver_obj.stations = ""
+                flash("За сьогодні ваші робочі години перевищили норми КЗПП. ", "info")
+
             driver_obj.stations = driver_obj.stations.split(driver_obj.station_delimiter)
             driver_obj.stations = [] if len(driver_obj.stations) == 1 and driver_obj.stations[0] == "" \
                 else driver_obj.stations
 
             if not driver_obj.stations:
-                flash("На сьогодні вам не призначено маршрут", "info")
+                flash("\nНа сьогодні вам не призначено маршрут.", "info")
         else:
             flash("Водія с таким id не знайдено", "error")
 
@@ -278,8 +326,11 @@ def driver():
             if worked_hours is not None and worked_hours != "":
                 try:
                     worked_hours = float(worked_hours)
+                    if worked_hours < 0.0:
+                        raise ValueError
+
                 except ValueError:
-                    flash("Відпрацьовані години введені в неправильному форматі", "error")
+                    flash("Відпрацьовані години введені в неправильному форматі.", "error")
                     return redirect(f"driver.html?id={driver_id}")
 
                 DriverDatabase.set_worked_hours_by_driver_id(worked_hours=worked_hours, driver_id=driver_id)
@@ -288,6 +339,9 @@ def driver():
             if rest_hours is not None and rest_hours != "":
                 try:
                     rest_hours = float(rest_hours)
+                    if rest_hours < 0.0:
+                        raise ValueError
+
                 except ValueError:
                     flash("Час відпочинку введений в неправильному форматі", "error")
                     return redirect(f"driver.html?id={driver_id}")

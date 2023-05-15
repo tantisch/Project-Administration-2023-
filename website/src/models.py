@@ -1,9 +1,15 @@
-# DRIVER ----
+from __future__ import annotations
+import random
 from typing import List
 
 from flask_login import UserMixin
 
 from src import cursor
+
+
+class LCU:
+    # Кодекс законів про працю України
+    max_worked_hours = 8
 
 
 class Owner:
@@ -95,23 +101,25 @@ class DirectorDatabase:
         return Director(*director_info)
 
     @staticmethod
-    def get_drivers_by_director_id(director_id: int):
+    def get_drivers_by_director_id(director_id: int) -> List[Driver]:
         sql_query = f"""
-                    select driver_id, name, surname, surname2
+                    select driver_id, name, surname, surname2, worked_hours, rest_hours, route_id
                     from trolleybus_site_database.drivers
                     join trolleybus_site_database.users u on u.user_id = drivers.user_id
                     where drivers.is_active = true and drivers.director_id = {director_id};
                     """
         DirectorDatabase.db_cursor.execute(sql_query)
 
-        # fields: driver_id, name, surname, surname2
+        # fields: driver_id, name, surname, surname2, worked_hours, rest_hours, route_id
         drivers_info = DirectorDatabase.db_cursor.fetchall()
         if drivers_info is None:
             return None
 
         drivers = []
         for driver_info in drivers_info:
-            drivers.append(Driver(*driver_info))
+            drivers.append(Driver(driver_id=driver_info[0],
+                                  name=driver_info[1], surname=driver_info[2], surname2=driver_info[3],
+                                  worked_hours=driver_info[4], rest_hours=driver_info[5], route_id=driver_info[6]))
         return drivers
 
     @staticmethod
@@ -126,12 +134,39 @@ class DirectorDatabase:
         directors: List[Director] = [Director(*director_info) for director_info in DriverDatabase.db_cursor.fetchall()]
         return directors
 
+    @staticmethod
+    def end_day(director_id: int):
+        drivers = DirectorDatabase.get_drivers_by_director_id(director_id)
+
+        for driver in drivers:
+            sql_query = f"""
+                        insert into trolleybus_site_database.drivers_reports (report_id, 
+                                                                              driver_id, 
+                                                                              worked_hours, 
+                                                                              rest_hours, 
+                                                                              route_id)
+                        values (nextval('trolleybus_site_database.drivers_reports_seq'), 
+                                {driver.id}, 
+                                {driver.worked_hours}, 
+                                {driver.rest_hours}, 
+                                {driver.route_id});
+                        """
+            DirectorDatabase.db_cursor.execute(sql_query)
+            DirectorDatabase.db_cursor.execute("commit;")
+
+            DriverDatabase.set_rest_hours_by_driver_id(rest_hours=0, driver_id=driver.id)
+            DriverDatabase.set_worked_hours_by_driver_id(worked_hours=0, driver_id=driver.id)
+
+            driver.set_driver_route_id()
+            DriverDatabase.set_route_id_by_driver_id(route_id=driver.route_id, driver_id=driver.id)
+
 
 class Driver:
     station_delimiter = "-"
 
     def __init__(self, driver_id: int = None, name: str = None, surname: str = None, surname2: str = None,
-                 stations: str = None, worked_hours: float = 0.0, rest_hours: float = 0.0, director_id: int = None):
+                 stations: str = None, worked_hours: float = 0.0, rest_hours: float = 0.0, route_id: int = -1,
+                 director_id: int = None):
         self.id = driver_id
         self.name = name
         self.surname = surname
@@ -139,7 +174,20 @@ class Driver:
         self.stations = stations
         self.worked_hours = worked_hours
         self.rest_hours = rest_hours
+        self.route_id = route_id
         self.director_id = director_id
+
+    def set_driver_route_id(self, route_id: int = None):
+        DriverDatabase.db_cursor.execute("""
+                                        select route_id
+                                        from trolleybus_site_database.routes;
+                                        """)
+        if route_id is None:
+            routes_ids = DriverDatabase.db_cursor.fetchall()
+            routes_ids = [i[0] for i in routes_ids]
+            self.route_id = random.choice(routes_ids)
+        else:
+            self.route_id = route_id
 
 
 class DriverDatabase:
@@ -162,7 +210,8 @@ class DriverDatabase:
     @staticmethod
     def get_driver_by_driver_id(driver_id: int):
         sql_query = f"""
-                    select driver_id, name, surname, surname2, stations, worked_hours, rest_hours, director_id
+                    select driver_id, name, surname, surname2, stations, worked_hours, rest_hours, 
+                    drivers.route_id, director_id
                     from trolleybus_site_database.drivers
                     join trolleybus_site_database.routes r on r.route_id = drivers.route_id
                     join trolleybus_site_database.users u on u.user_id = drivers.user_id
@@ -170,7 +219,7 @@ class DriverDatabase:
                     """
         DriverDatabase.db_cursor.execute(sql_query)
 
-        # fields: driver_id, name, surname, surname2, stations, worked_hours, rest_hours, director_id
+        # fields: driver_id, name, surname, surname2, stations, worked_hours, rest_hours, route_id, director_id
         driver_info = DriverDatabase.db_cursor.fetchone()
         if driver_info is None:
             return None
@@ -180,7 +229,8 @@ class DriverDatabase:
     @staticmethod
     def get_driver_by_user_id(user_id: int):
         sql_query = f"""
-                        select driver_id, name, surname, surname2, stations, worked_hours, rest_hours, director_id
+                        select driver_id, name, surname, surname2, stations, worked_hours, rest_hours, 
+                        drivers.route_id, director_id
                         from trolleybus_site_database.drivers
                         join trolleybus_site_database.routes r on r.route_id = drivers.route_id
                         join trolleybus_site_database.users u on u.user_id = drivers.user_id
@@ -188,7 +238,7 @@ class DriverDatabase:
                         """
         DriverDatabase.db_cursor.execute(sql_query)
 
-        # fields: driver_id, name, surname, surname2, stations, worked_hours, rest_hours, director_id
+        # fields: driver_id, name, surname, surname2, stations, worked_hours, rest_hours, route_id, director_id
         driver_info = DriverDatabase.db_cursor.fetchone()
         if driver_info is None:
             return None
@@ -228,10 +278,10 @@ class DriverDatabase:
     @staticmethod
     def set_route_id_by_driver_id(route_id: int, driver_id: int):
         sql_query = f"""
-                            update trolleybus_site_database.drivers
-                            set route_id = {route_id}
-                            where drivers.is_active = true and driver_id = {driver_id};
-                            """
+                    update trolleybus_site_database.drivers
+                    set route_id = {route_id}
+                    where drivers.is_active = true and driver_id = {driver_id};
+                    """
         DriverDatabase.db_cursor.execute(sql_query)
         DriverDatabase.db_cursor.execute("commit;")
 
@@ -364,11 +414,22 @@ class UserDatabase:
         UserDatabase.db_cursor.execute("commit;")
 
     @staticmethod
-    def take_away_role_by_user_id(user_id: int):
+    def take_away_role_by_user_id(user_id: int, role_id: int = None):
         sql_query = f"""
                     update trolleybus_site_database.users
                     set role_id = 4
                     where user_id = {user_id};
                     """
         UserDatabase.db_cursor.execute(sql_query)
+
+        if role_id is not None and role_id == 3:
+            sql_query1 = f"""
+                        update trolleybus_site_database.drivers
+                        set worked_hours = 0, 
+                            rest_hours = 0,
+                            route_id = -1
+                        where drivers.user_id = {user_id};
+                        """
+            UserDatabase.db_cursor.execute(sql_query1)
+
         UserDatabase.db_cursor.execute("commit;")

@@ -29,7 +29,15 @@
         <nav>
             {% if current_user.role_id == 1 %}
                 <a href="{{ grant_owner_role_url }}" class="login-btn">Дати роль "Власник"</a>
-                <a href="{{ grant_director_role_url }}" class="login-btn">Дати роль "Працівник транспортного віддлу"</a>
+                <a href="{{ grant_director_role_url }}" class="login-btn">Дати роль "Працівник транспортного
+                    відділу"</a>
+                {% if director_obj %}
+                    <a href="{{ grant_driver_role_with_director_url }}" class="login-btn">Дати роль "Водій" та
+                        призначити до
+                        Працівника транспортного відділу:<br>
+                        <strong>{{ director_obj.name }} {{ director_obj.surname }} {{ director_obj.surname2 }}</strong>
+                    </a>
+                {% endif %}
             {% endif %}
             {% if current_user.role_id == 2 %}
                 <a href="{{ grant_driver_role_url }}" class="login-btn">Дати роль "Водій"</a>
