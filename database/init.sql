@@ -21,9 +21,6 @@ commit;
 ----------------------------------------------------------------
 
 
-
-
-
 -- USERS
 create table trolleybus_site_database.users
 (
@@ -45,9 +42,6 @@ create sequence trolleybus_site_database.users_seq
 
 alter sequence trolleybus_site_database.users_seq cache 1;
 ----------------------------------------------------------------
-
-
-
 
 
 -- OWNERS
@@ -132,9 +126,6 @@ execute procedure trolleybus_site_database.unset_owner_role();
 ----------------------------------------------------------------
 
 
-
-
-
 -- DIRECTORS
 create table trolleybus_site_database.directors
 (
@@ -217,9 +208,6 @@ execute procedure trolleybus_site_database.unset_director_role();
 ----------------------------------------------------------------
 
 
-
-
-
 -- ROUTES
 create table trolleybus_site_database.routes
 (
@@ -249,9 +237,6 @@ values (4, 'N-J-H-A-E-F-L-G-P-K-D-M-O-I-C-B');
 ----------------------------------------------------------------
 
 
-
-
-
 -- DRIVERS
 create table trolleybus_site_database.drivers
 (
@@ -260,8 +245,8 @@ create table trolleybus_site_database.drivers
     user_id      integer not null
         constraint drivers_users_null_fk
             references trolleybus_site_database.users,
-    worked_hours float default 0.0,
-    rest_hours   float default 0.0,
+    worked_hours float,
+    rest_hours   float,
     route_id     integer default -1
         constraint drivers_routes_null_fk
             references trolleybus_site_database.routes,
@@ -342,7 +327,31 @@ execute procedure trolleybus_site_database.unset_driver_role();
 ----------------------------------------------------------------
 
 
+-- DRIVERS_REPORTS
+drop sequence if exists trolleybus_site_database.drivers_reports_seq;
 
+create sequence trolleybus_site_database.drivers_reports_seq
+    increment 1
+    start 1;
+
+alter sequence trolleybus_site_database.drivers_reports_seq cache 1;
+
+create table trolleybus_site_database.drivers_reports
+(
+    report_id    integer not null
+        constraint drivers_reports_pk
+            primary key,
+    dt           date             default CURRENT_DATE,
+    driver_id    integer
+        constraint drivers_reports_drivers_null_fk
+            references trolleybus_site_database.drivers,
+    worked_hours double precision default 0.0,
+    rest_hours   double precision default 0.0,
+    route_id     integer
+        constraint drivers_reports_routes_route_id_fk
+            references trolleybus_site_database.routes
+);
+----------------------------------------------------------------
 
 
 -- TEST USERS CREATION
@@ -353,9 +362,6 @@ values (-1, 'chel1@gmail.com', '12345', 'chel1_name', 'chel1_surname', 'chel1_su
 insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password, name, surname, surname2)
 values (-2, 4, 'chel2@gmail.com', '12345', 'chel2_name', 'chel2_surname', 'chel2_surname2');
 ----------------------------------------------------------------
-
-
-
 
 
 -- ADD OWNERS
@@ -375,9 +381,6 @@ values (-2, -4, true);
 ----------------------------------------------------------------
 
 
-
-
-
 -- ADD DIRECTORS
 
 insert into trolleybus_site_database.users (user_id, role_id, user_email, user_password, name, surname, surname2)
@@ -393,9 +396,6 @@ values (-6, 2, 'director2', '123', 'director2_name', 'director2_surname', 'direc
 insert into trolleybus_site_database.directors (director_id, user_id, is_active)
 values (-2, -6, true);
 ----------------------------------------------------------------
-
-
-
 
 
 -- ADD DRIVERS
@@ -432,9 +432,6 @@ $$
     end
 $$;
 ----------------------------------------------------------------
-
-
-
 
 
 -- ADD NO-ROLE ACCOUNTS
